@@ -1,39 +1,54 @@
-import io
+"""streamStreamTest.py: Server code for video streaming from rpi """
+__author__ = 'Siddharth Sharma'
+
+import cv2
+import numpy as np
 import socket
 import struct
-from PIL import Image
 
-# Create a TCP/IP socket and listen for connections on COMP_IP_ADDRESS:8000
-# Don't forget to allow the port on the windows firewall settings
-sock = socket.socket()
-sock.bind(('10.166.38.64', 8000))
-sock.listen(1)
-
-print 'Listening for connection...'
-
-# Accept a single connection and make a file like object out of it
-# TODO: allow multiple client connections using threading.
-connection = sock.accept()[0].makefile('rb')
-print 'Connection established!'
-
-try:
-	while True:
-		# Read the length of the image as a 32-bit unsigned int. If the
-		# length is zero, quit the loop
-		image_len = struct.unpack('<L', connection.read(struct.calcsize('<L')))[0]
-		if not image_len:
-			break
+class VideoStreamingTest:
+	def __init__(self):
+		# Create a TCP/IP socket and listen for connections on COMP_IP_ADDRESS:8000
+		# Don't forget to allow the port on the windows firewall settings
+		self.server_socket = socket.socket()
+		self.server_socket.bind(('10.166.38.64', 8000))
+		self.server_socket.listen(0)
+		print 'Listening for connection...'
 		
-		# Construct a stream to hold the image data and read image data from the
-		# connection
-		image_stream = io.BytesIO()
-		image_stream.write(connection.read(image_len))
+		# Accept a single connection and make a file like object out of it
+		# TODO: allow multiple client connections using threading.
+		self.connection, self.client_address = self.server_socket.accept()
+		self.connection = self.connection.makefile('rb')
+		self.streamVideo()
 
-		# Rewind the stream and open it as an image with PIL
-		image_stream.seek(0)
-		image = Image.open(image_stream)
-		image.show()
-finally:
-	print 'Closing the connection.'
-	connection.close()
-	sock.close()
+	def streamVideo(self):
+		try:
+			print 'Connection from:', self.client_address
+			print 'Streaming...'
+			print "Press 'q' to exit"
+
+			while True:
+				# Obtain the length of the frame streamed over the connection. If image_len = 0, close the
+				# connection
+				image_len = struct.unpack('<L', self.connection.read(struct.calcsize('<L')))[0]
+				if not image_len:
+					break
+
+				# Store bytes in a string
+				stream_bytes = ''
+				stream_bytes += self.connection.read(image_len)
+
+				# Read an image from buffer in memory
+				image = cv2.imdecode(np.fromstring(stream_bytes, dtype=np.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
+
+				# Show the frame
+				cv2.imshow('Video', image)
+				if (cv2.waitKey(5) & 0xFF) == ord('q'):
+					break
+		finally:
+			print 'Closing the connection.'
+			self.connection.close()
+			self.server_socket.close()
+
+if __name__ == '__main__':
+	VideoStreamingTest()
