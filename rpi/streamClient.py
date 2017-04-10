@@ -1,10 +1,11 @@
 """
-Author: sishar
+streamClient.py: Script to stream jpeg format video over TCP/IP socket.
 Reference:
     PiCamera documentation
     https://picamera.readthedocs.org/en/release-1.10/recipes2.html
     
 """
+__author__ = 'Siddharth Sharma'
 
 import io
 import time
@@ -19,7 +20,7 @@ print 'Starting connection'
 
 server_address_work = ('10.166.38.64', 8000)
 server_address_home = ('192.168.0.87', 8000)
-client_socket.connect(server_address_home)
+client_socket.connect(server_address_work)
 
 print 'Connected to server'
 
@@ -44,9 +45,12 @@ try:
         connection.write(struct.pack('<L', stream.tell()))
         connection.flush()
         stream.seek(0)
+        
         connection.write(stream.read())
+  
         if time.time() - start > 300:
             break
+
         stream.seek(0)
         stream.truncate()
     connection.write(struct.pack('<L', 0))
