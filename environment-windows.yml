@@ -1,0 +1,14 @@
+name: sdc
+channels:
+- defaults
+dependencies:
+- pip=9.0.1=py36_1
+- python=3.6.1=2
+- setuptools=27.2.0=py36_1
+- vs2015_runtime=14.0.25420=0
+- wheel=0.29.0=py36_0
+- pip:
+  - pygame==1.9.3
+  - pyserial==3.3
+prefix: C:\ProgramData\Anaconda3\envs\sdc
+
