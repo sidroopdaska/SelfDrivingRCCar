@@ -28,25 +28,8 @@ class RCControlTest:
                 if event.type == KEYDOWN:
                     key_input = pygame.key.get_pressed()
 
-                    # simple car controls
-                    if key_input[pygame.K_UP]:
-                        print("Forward")
-                        self.ser.write(b'1')
-
-                    elif key_input[pygame.K_DOWN]:
-                        print("Reverse")
-                        self.ser.write(b'2')
-
-                    elif key_input[pygame.K_RIGHT]:
-                        print("Right")
-                        self.ser.write(b'3')
-
-                    elif key_input[pygame.K_LEFT]:
-                        print("Left")
-                        self.ser.write(b'4')
-
                     # complex car controls
-                    elif key_input[pygame.K_UP] and key_input[pygame.K_RIGHT]:
+                    if key_input[pygame.K_UP] and key_input[pygame.K_RIGHT]:
                         print("Forward Right")
                         self.ser.write(b'5')
 
@@ -61,6 +44,23 @@ class RCControlTest:
                     elif key_input[pygame.K_DOWN] and key_input[pygame.K_LEFT]:
                         print("Reverse Left")
                         self.ser.write(b'8')
+
+                    # simple car controls
+                    elif key_input[pygame.K_UP]:
+                        print("Forward")
+                        self.ser.write(b'1')
+
+                    elif key_input[pygame.K_DOWN]:
+                        print("Reverse")
+                        self.ser.write(b'2')
+
+                    elif key_input[pygame.K_RIGHT]:
+                        print("Right")
+                        self.ser.write(b'3')
+
+                    elif key_input[pygame.K_LEFT]:
+                        print("Left")
+                        self.ser.write(b'4')
 
                     # exit
                     elif key_input[pygame.K_x] or key_input[pygame.K_q]:

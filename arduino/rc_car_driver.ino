@@ -30,15 +30,15 @@ void loop() {
     reset();
   }
 
-  drive(command, time);
+   drive(command, time);
 }
 
 void reset()
 {
-  digitalWrite(forward_pin, HIGH); 
-  digitalWrite(reverse_pin, HIGH); 
-  digitalWrite(left_pin, HIGH); 
-  digitalWrite(right_pin, HIGH); 
+  digitalWrite(forward_pin, HIGH);
+  digitalWrite(reverse_pin, HIGH);
+  digitalWrite(left_pin, HIGH);
+  digitalWrite(right_pin, HIGH);
 }
 
 void forward(int time)
@@ -100,18 +100,15 @@ void drive(int command, int time)
 {
   switch(command)
   {
-    case 0: reset(); break;
-    case 1: forward(time); break;
-    case 2: reverse(time); break;
-    case 3: right(time); break;
-    case 4: left(time); break;
-
-    case 5: forward_right(time); break;
-    case 6: forward_left(time); break;
-    case 7: reverse_right(time); break;
-    case 8: reverse_left(time); break;
-
-    default: Serial.print("Invalud command! \n");
+    case 48: reset(); break;
+    case 49: forward(time); break;
+    case 50: reverse(time); break;
+    case 51: right(time); break;
+    case 52: left(time); break;
+    case 53: forward_right(time); break;
+    case 54: forward_left(time); break;
+    case 55: reverse_right(time); break;
+    case 56: reverse_left(time); break;
+    default: break;
   }
 }
-
