@@ -10,22 +10,22 @@ class VideoStreamingTest:
 	def __init__(self):
 		# Create a TCP/IP socket and listen for connections on COMP_IP_ADDRESS:8000
 		# Don't forget to allow the port on the windows firewall settings
-		self.server_socket = socket.socket()
-		self.server_socket.bind(('10.166.38.64', 8000))
-		self.server_socket.listen(0)
-		print 'Listening for connection...'
+
+		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.server_socket.bind(('192.168.137.1', 45713))
+		self.server_socket.listen(1)
+		print('Listening for connection...')
 		
 		# Accept a single connection and make a file like object out of it
-		# TODO: allow multiple client connections using threading.
 		self.connection, self.client_address = self.server_socket.accept()
 		self.connection = self.connection.makefile('rb')
 		self.streamVideo()
 
 	def streamVideo(self):
 		try:
-			print 'Connection from:', self.client_address
-			print 'Streaming...'
-			print "Press 'q' to exit"
+			print('Connection from: {0}'.format(self.client_address))
+			print('Streaming...')
+			print("Press 'q' to exit")
 
 			while True:
 				# Obtain the length of the frame streamed over the connection. If image_len = 0, close the
@@ -35,18 +35,18 @@ class VideoStreamingTest:
 					break
 
 				# Store bytes in a string
-				stream_bytes = ''
-				stream_bytes += self.connection.read(image_len)
+				recv_bytes = b''
+				recv_bytes += self.connection.read(image_len)
 
 				# Read an image from buffer in memory
-				image = cv2.imdecode(np.fromstring(stream_bytes, dtype=np.uint8), cv2.CV_LOAD_IMAGE_UNCHANGED)
+				image = cv2.imdecode(np.fromstring(recv_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
 
 				# Show the frame
 				cv2.imshow('Video', image)
 				if (cv2.waitKey(5) & 0xFF) == ord('q'):
 					break
 		finally:
-			print 'Closing the connection.'
+			print('Closing the connection.')
 			self.connection.close()
 			self.server_socket.close()
 
