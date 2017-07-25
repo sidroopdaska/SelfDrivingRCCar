@@ -11,27 +11,29 @@ from utils.utils import *
 import time
 import os
 
+# TODO: save the images within the same .npz file
+
 
 class CollectTrainingData(object):
     def __init__(self):
+        # Open a socket and accept a single connection in read mode
         self.sock = socket.socket()
         self.sock.bind(server_address)
         self.sock.listen(1)
 
-        # accept a single connection
         self.connection = self.sock.accept()[0].makefile('rb')
 
-        # connect to the serial port
+        # Connect to the serial port
         self.ser = find_arduino(arduino_serial_number)
         self.ser.flush()
         self.send_instr = True
 
-        # create labels (L, R, F, B)
+        # Create class labels (L, R, F, B)
         self.k = np.zeros((4,4), 'float')
         for i in range(4):
             self.k[i,i] = 1
 
-        # initialise pygame
+        # Initialise pygame for user car steering input
         pygame.init()
         pygame.display.set_mode((400, 300))
 
@@ -46,7 +48,7 @@ class CollectTrainingData(object):
         img_array = np.zeros((1, 38400))
         label_array = np.zeros((1, 4), 'float')
 
-        # stream frames from the captured video
+        # Capture frames from the streamed video
         try:
             frame = 1
 
@@ -66,16 +68,16 @@ class CollectTrainingData(object):
                 # Show the frame
                 cv2.imshow('Video', image)
 
-                # get ROI- lower half of the image
+                # get ROI- lower half of the image (height, width, channel= no channel for greyscale)
                 roi = image[120:240, :]
 
-                # reshape the ROI image into one row array
+                # Reshape the ROI image into one row array
                 temp_array = roi.reshape(1, 38400).astype(np.float32)
 
-                # get driver input
                 frame += 1
                 total_frames += 1
 
+                # Get driver input
                 for event in pygame.event.get():
                     if event.type == KEYDOWN:
                         key = pygame.key.get_pressed()
@@ -139,7 +141,7 @@ class CollectTrainingData(object):
                     elif event.type == KEYUP:
                         self.ser.write(b'0')
 
-            # save training images and labels
+            # Save training images and labels
             training_data = img_array[1:, :]
             training_labels = label_array[1:, :]
 
@@ -149,15 +151,15 @@ class CollectTrainingData(object):
                 os.makedirs(directory)
 
             try:
-                np.savez(directory + '/' + file_name + '.npz', train=training_data, train_labels=training_labels)
+                np.savez(directory + '/' + file_name + '.npz', training_data=training_data,
+                         training_labels=training_labels)
             except IOError as e:
                 print(e)
 
-            # print meta data
+            # Print meta data
             end_time = cv2.getTickCount()
             duration = end_time - start_time // cv2.getTickFrequency()
             print("Streaming duration: {0}".format(duration))
-
             print(training_data.shape)
             print(training_labels.shape)
             print("Total frames: {}".format(total_frames))
