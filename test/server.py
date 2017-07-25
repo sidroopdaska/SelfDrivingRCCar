@@ -1,7 +1,7 @@
 import socket
-import sys
+from utils.utils import *
 
-def handleConnection(connection, client_address):
+def handle_connection(connection, client_address):
 	try:
 		print('connected to {0} on port:{1}'.format(client_address[0], client_address[1]))
 		while True:
@@ -16,19 +16,19 @@ def handleConnection(connection, client_address):
 		# clean up the connection
 		connection.close()
 
+if __name__ == '__main__':
+	# create a TCP/IP socket
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# Bind socket to the port
-server_address = ('10.104.64.231', 45713)
-print('start up on {0} port {1}'.format(server_address[0], server_address[1]))
+	# Bind socket to the port
+	print('start up on {0} port {1}'.format(server_address[0], server_address[1]))
+	sock.bind(server_address)
 
-sock.bind(server_address)
-# Listen for incoming connections
-sock.listen(1)
+	# Listen for incoming connections
+	sock.listen(1)
 
-while True:
-	# wait for a connection
-	print('Waiting for a connection...')
-	connection, client_address = sock.accept()
-	handleConnection(connection, client_address)
+	while True:
+		# wait for a connection
+		print('Waiting for a connection...')
+		connection, client_address = sock.accept()
+		handle_connection(connection, client_address)

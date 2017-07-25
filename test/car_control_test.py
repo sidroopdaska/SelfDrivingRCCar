@@ -1,65 +1,74 @@
-import serial
-import serial.tools.list_ports
+"""car_control_test.py: Script to manually control the RC Car"""
+
 import pygame
 from pygame.locals import *
+from utils.utils import *
 
-def find_arduino(serial_number):
-    for p in serial.tools.list_ports.comports():
-        if p.serial_number == serial_number:
-            return serial.Serial(p.device)
-
-    raise IOError("Could not find the Arduino - is it plugged in!")
-
-class RCControlTest:
+class CarControlTest:
     def __init__(self):
         # Find the Arduino
-        self.ser = find_arduino(serial_number='75237333536351F0F0C1')
+        try:
+            self.ser = find_arduino(serial_number=arduino_serial_number)
+        except IOError as e:
+            print(e)
+
         self.ser.flush()
 
         # Setup and begin pygame
         pygame.init()
+
         pygame.display.set_mode((400, 300))
         self.send_inst = True
         self.steer()
 
     def steer(self):
+        complex_cmd = False
+
         while self.send_inst:
             for event in pygame.event.get():
-                if event.type == KEYDOWN:
+                if event.type == KEYDOWN or complex_cmd:
                     key_input = pygame.key.get_pressed()
 
                     # complex car controls
                     if key_input[pygame.K_UP] and key_input[pygame.K_RIGHT]:
                         print("Forward Right")
+                        complex_cmd = True
                         self.ser.write(b'5')
 
                     elif key_input[pygame.K_UP] and key_input[pygame.K_LEFT]:
                         print("Forward Left")
+                        complex_cmd = True
                         self.ser.write(b'6')
 
                     elif key_input[pygame.K_DOWN] and key_input[pygame.K_RIGHT]:
                         print("Reverse Right")
+                        complex_cmd = True
                         self.ser.write(b'7')
 
                     elif key_input[pygame.K_DOWN] and key_input[pygame.K_LEFT]:
                         print("Reverse Left")
+                        complex_cmd = True
                         self.ser.write(b'8')
 
                     # simple car controls
                     elif key_input[pygame.K_UP]:
                         print("Forward")
+                        complex_cmd = False
                         self.ser.write(b'1')
 
                     elif key_input[pygame.K_DOWN]:
                         print("Reverse")
+                        complex_cmd = False
                         self.ser.write(b'2')
 
                     elif key_input[pygame.K_RIGHT]:
                         print("Right")
+                        complex_cmd = False
                         self.ser.write(b'3')
 
                     elif key_input[pygame.K_LEFT]:
                         print("Left")
+                        complex_cmd = False
                         self.ser.write(b'4')
 
                     # exit
@@ -69,6 +78,7 @@ class RCControlTest:
 
                 elif event.type == pygame.KEYUP:
                     self.ser.write(b'0')
+                    complex_cmd = False
 
                 elif event.type == pygame.QUIT:
                     self.close_serial_connection()
@@ -82,4 +92,4 @@ class RCControlTest:
 
 
 if __name__ == "__main__":
-    RCControlTest()
+    CarControlTest()
