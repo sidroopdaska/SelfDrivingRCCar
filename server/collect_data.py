@@ -10,11 +10,12 @@ from pygame.locals import *
 from utils.utils import *
 import time
 import os
+import sys
 
 # TODO: save the images within the same .npz file
 
 
-class CollectTrainingData(object):
+class CollectData(object):
     def __init__(self):
         # Open a socket and accept a single connection in read mode
         self.sock = socket.socket()
@@ -24,7 +25,12 @@ class CollectTrainingData(object):
         self.connection = self.sock.accept()[0].makefile('rb')
 
         # Connect to the serial port
-        self.ser = find_arduino(arduino_serial_number)
+        try:
+            self.ser = find_arduino(arduino_serial_number)
+        except IOError as e:
+            print(e)
+            sys.exit()
+
         self.ser.flush()
         self.send_instr = True
 
@@ -44,8 +50,8 @@ class CollectTrainingData(object):
         total_frames = 0
         start_time = cv2.getTickCount()
 
-        print('Starting to collect training images...')
-        img_array = np.zeros((1, 38400))
+        print('Starting to collect data...')
+        image_array = np.zeros((1, 38400))
         label_array = np.zeros((1, 4), 'float')
 
         # Capture frames from the streamed video
@@ -63,7 +69,7 @@ class CollectTrainingData(object):
                 image = cv2.imdecode(np.fromstring(recv_bytes, dtype=np.uint8), cv2.IMREAD_GRAYSCALE)
 
                 # save image
-                cv2.imwrite('training_images/frame{:>05}.jpg'.format(frame), image)
+                cv2.imwrite('collected_images/frame{:>05}.jpg'.format(frame), image)
 
                 # Show the frame
                 cv2.imshow('Video', image)
@@ -84,14 +90,14 @@ class CollectTrainingData(object):
 
                         if key[pygame.K_UP] and key[pygame.K_RIGHT]:
                             print("Forward Right")
-                            img_array = np.vstack((img_array, temp_array))
+                            image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[1]))
                             saved_frames += 1
                             self.ser.write(b'5')
 
                         elif key[pygame.K_UP] and key[pygame.K_LEFT]:
                             print("Forward Left")
-                            img_array = np.vstack((img_array, temp_array))
+                            image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[0]))
                             saved_frames += 1
                             self.ser.write(b'6')
@@ -106,28 +112,28 @@ class CollectTrainingData(object):
 
                         elif key[pygame.K_UP]:
                             print("Forward")
-                            img_array = np.vstack((img_array, temp_array))
+                            image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[2]))
                             saved_frames += 1
                             self.ser.write(b'1')
 
                         elif key[pygame.K_DOWN]:
                             print("Reverse")
-                            img_array = np.vstack((img_array, temp_array))
+                            image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[3]))
                             saved_frames += 1
                             self.ser.write(b'2')
 
                         elif key[pygame.K_RIGHT]:
                             print("Right")
-                            img_array = np.vstack((img_array, temp_array))
+                            image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[1]))
                             saved_frames += 1
                             self.ser.write(b'3')
 
                         elif key[pygame.K_LEFT]:
                             print("Left")
-                            img_array = np.vstack((img_array, temp_array))
+                            image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[0]))
                             saved_frames += 1
                             self.ser.write(b'4')
@@ -141,18 +147,18 @@ class CollectTrainingData(object):
                     elif event.type == KEYUP:
                         self.ser.write(b'0')
 
-            # Save training images and labels
-            training_data = img_array[1:, :]
-            training_labels = label_array[1:, :]
+            # Save images and labels
+            image_array = image_array[1:, :]
+            label_array = label_array[1:, :]
 
             file_name = str(int(time.time()))
-            directory = "training_data"
+            directory = "data_set"
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
             try:
-                np.savez(directory + '/' + file_name + '.npz', training_data=training_data,
-                         training_labels=training_labels)
+                np.savez(directory + '/' + file_name + '.npz', images=image_array,
+                         labels=label_array)
             except IOError as e:
                 print(e)
 
@@ -160,11 +166,11 @@ class CollectTrainingData(object):
             end_time = cv2.getTickCount()
             duration = end_time - start_time // cv2.getTickFrequency()
             print("Streaming duration: {0}".format(duration))
-            print(training_data.shape)
-            print(training_labels.shape)
-            print("Total frames: {}".format(total_frames))
-            print("Saved frames: {}".format(saved_frames))
-            print("Dropped frames: {}".format(total_frames - saved_frames))
+            print(image_array.shape)
+            print(label_array.shape)
+            print("Total frames: {0}".format(total_frames))
+            print("Saved frames: {0}".format(saved_frames))
+            print("Dropped frames: {0}".format(total_frames - saved_frames))
 
         finally:
             self.connection.close()
@@ -172,4 +178,4 @@ class CollectTrainingData(object):
 
 
 if __name__ == '__main__':
-    CollectTrainingData()
+    CollectData()

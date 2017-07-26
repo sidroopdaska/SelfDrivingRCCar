@@ -3,6 +3,7 @@
 import pygame
 from pygame.locals import *
 from utils.utils import *
+import sys
 
 class CarControlTest:
     def __init__(self):
@@ -11,6 +12,7 @@ class CarControlTest:
             self.ser = find_arduino(serial_number=arduino_serial_number)
         except IOError as e:
             print(e)
+            sys.exit()
 
         self.ser.flush()
 
