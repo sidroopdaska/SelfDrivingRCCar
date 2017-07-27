@@ -51,7 +51,7 @@ class CollectData(object):
         start_time = cv2.getTickCount()
 
         print('Starting to collect data...')
-        image_array = np.zeros((1, 38400))
+        image_array = np.zeros((1, 38400), 'float')
         label_array = np.zeros((1, 4), 'float')
 
         # Capture frames from the streamed video

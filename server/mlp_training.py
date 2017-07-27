@@ -1,20 +1,22 @@
-"""mlp_training.py: Neural Network training"""
+"""mlp_training.py: Neural Network training using Back-propagation"""
 
 import cv2
-import sys
-import numpy as np
 import glob
+import numpy as np
 from sklearn.model_selection import train_test_split
+import sys
+
 
 def retrieve_data_set():
     """Retrieve data from all the .npz files and aggregate it into a
     data set for mlp training"""
+
     start_time = cv2.getTickCount()
 
     print("Loading data set...")
 
-    image_array = np.zeros((1, 38400))
-    label_array = np.zeros((1, 4))
+    image_array = np.zeros((1, 38400), 'float')
+    label_array = np.zeros((1, 4), 'float')
 
     # Retrieve a list of pathname that matches the below expr
     data_set = glob.glob("data_set/*.npz")
@@ -49,4 +51,36 @@ if __name__ == '__main__':
     # Split the data set with 7:3 ratio into training set and test set
     train_X, train_Y, test_X, test_Y = train_test_split(X, Y, test_size=0.3)
 
-    # Create MLP
+    # Create MLP model and train
+    start_time = cv2.getTickCount()
+
+    layer_sizes = np.int32([38400, 32, 4])
+
+    model = cv2.ml.ANN_MLP_create()
+    model.setLayerSizes(layer_sizes)
+    model.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
+    model.setBackpropMomentumScale(0.0)
+    model.setBackpropWeightScale(0.001)
+    model.setTermCriteria((cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 500, 0.001))
+    model.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM, 2, 1)
+
+    print("Training MLP...")
+    model.train(train_X, cv2.ml.ROW_SAMPLE, train_Y)
+
+    end_time = cv2.getTickCount()
+    duration = (end_time - start_time) // cv2.getTickFrequency()
+    print("Training duration: {0}".format(duration))
+
+    # Get the training accuracy
+    ret_train, resp_train = model.predict(train_X)
+    train_mean_sq_error = ((resp_train - train_Y) * (resp_train - train_Y)).mean()
+    print("Train set accuracy: {0:.2f}".format(train_mean_sq_error * 100))
+
+    # Get the test accuracy
+    ret_test, resp_test = model.predict(test_X)
+    test_mean_sq_error = ((resp_test - test_Y) * (resp_test - test_Y)).mean()
+    print("Test set accuracy: {0:.2f}".format(test_mean_sq_error * 100))
+
+    # Save model
+    model.save("mlp_xml/mlp.xml")
+
