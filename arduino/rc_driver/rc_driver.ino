@@ -8,7 +8,8 @@ int right_pin = 9;
 int command = 0;
 
 // Duration for output (in ms)
-int time = 50;
+int on_time = 30;
+int off_time = 70;
 
 void setup() {
   // Set pins to OUTPUT mode
@@ -30,7 +31,7 @@ void loop() {
     reset();
   }
 
-   drive(command, time);
+   drive(command, on_time, off_time);
 }
 
 void reset()
@@ -41,74 +42,117 @@ void reset()
   digitalWrite(right_pin, HIGH);
 }
 
-void forward(int time)
+void forward(int one_time, int off_time, int c)
+{
+  if(c == 0)
+  {
+    digitalWrite(reverse_pin, HIGH);
+    digitalWrite(left_pin, HIGH);
+    digitalWrite(right_pin, HIGH);
+  } 
+  
+  digitalWrite(forward_pin, LOW);
+  delay(on_time);
+  digitalWrite(forward_pin, HIGH);
+  delay(off_time);
+//  digitalWrite(forward_pin, LOW);
+//  digitalWrite(reverse_pin, HIGH);
+//  digitalWrite(left_pin, HIGH);
+//  digitalWrite(right_pin, HIGH);
+//  delay(on_time);
+//  reset();
+//  delay(off_time);
+}
+
+void reverse(int on_time, int off_time)
+{
+  digitalWrite(forward_pin, HIGH);
+  digitalWrite(reverse_pin, LOW);
+  digitalWrite(left_pin, HIGH);
+  digitalWrite(right_pin, HIGH);
+  delay(on_time);
+  reset();
+  delay(off_time);
+}
+
+void left(int on_time, int off_time)
+{
+  digitalWrite(forward_pin, HIGH);
+  digitalWrite(reverse_pin, HIGH);
+  digitalWrite(left_pin, LOW);
+  digitalWrite(right_pin, HIGH);
+  delay(on_time);
+  reset();
+  delay(off_time);
+
+}
+
+void right(int on_time, int off_time)
+{
+  digitalWrite(forward_pin, HIGH);
+  digitalWrite(reverse_pin, HIGH);
+  digitalWrite(left_pin, HIGH);
+  digitalWrite(right_pin, LOW);
+  delay(on_time);
+  reset();
+  delay(off_time);
+}
+
+void forward_right(int on_time, int off_time)
 {
   digitalWrite(forward_pin, LOW);
-  delay(time);
+  digitalWrite(reverse_pin, HIGH);
+  digitalWrite(left_pin, HIGH);
+  digitalWrite(right_pin, LOW);
+  delay(on_time);
+  reset();
+  delay(off_time);
 }
 
 
-void reverse(int time)
+void forward_left(int on_time, int off_time)
 {
-  digitalWrite(reverse_pin, LOW);
-  delay(time);
-}
-
-
-void left(int time)
-{
+  digitalWrite(reverse_pin, HIGH);
   digitalWrite(left_pin, LOW);
-  delay(time);
+  digitalWrite(right_pin, HIGH);
+  forward(on_time, off_time, 1);
 }
 
-
-void right(int time)
+void reverse_right(int on_time, int off_time)
 {
-  digitalWrite(right_pin, LOW);
-  delay(time);
-}
-
-void forward_right(int time)
-{
-  digitalWrite(forward_pin, LOW);
-  digitalWrite(right_pin, LOW);
-  delay(time);
-}
-
-void forward_left(int time)
-{
-  digitalWrite(forward_pin, LOW);
-  digitalWrite(left_pin, LOW);
-  delay(time);
-}
-
-void reverse_right(int time)
-{
+  digitalWrite(forward_pin, HIGH);
   digitalWrite(reverse_pin, LOW);
+  digitalWrite(left_pin, HIGH);
   digitalWrite(right_pin, LOW);
-  delay(time);
+  delay(on_time);
+  reset();
+  delay(off_time);
 }
 
-void reverse_left(int time)
+void reverse_left(int on_time, int off_time)
 {
+  digitalWrite(forward_pin, HIGH);
   digitalWrite(reverse_pin, LOW);
   digitalWrite(left_pin, LOW);
-  delay(time);
+  digitalWrite(right_pin, HIGH);
+  delay(on_time);
+  reset();
+  delay(off_time);
 }
 
-void drive(int command, int time)
+void drive(int command, int one_time, int off_time)
 {
   switch(command)
   {
     case 48: reset(); break;
-    case 49: forward(time); break;
-    case 50: reverse(time); break;
-    case 51: right(time); break;
-    case 52: left(time); break;
-    case 53: forward_right(time); break;
-    case 54: forward_left(time); break;
-    case 55: reverse_right(time); break;
-    case 56: reverse_left(time); break;
+    case 49: forward(on_time, off_time, 0); break;
+    case 50: reverse(on_time, off_time); break;
+    case 51: right(on_time, off_time); break;
+    case 52: left(on_time, off_time); break;
+    case 53: forward_right(on_time, off_time); break;
+    case 54: forward_left(on_time, off_time); break;
+    case 55: reverse_right(on_time, off_time); break;
+    case 56: reverse_left(on_time, off_time); break;
     default: break;
   }
 }

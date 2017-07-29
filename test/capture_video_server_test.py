@@ -6,6 +6,7 @@ import socket
 import struct
 from utils.utils import *
 
+
 class VideoStreamingTest:
     def __init__(self):
         # Create a TCP/IP socket and listen for connections on COMP_IP_ADDRESS:8000
@@ -23,6 +24,7 @@ class VideoStreamingTest:
         self.stream_video()
 
     def stream_video(self):
+        frame = 0
         try:
             print('Connection from: {0}'.format(self.client_address))
             print('Streaming...')
@@ -42,6 +44,8 @@ class VideoStreamingTest:
                 # Read an image from buffer in memory
                 image = cv2.imdecode(np.fromstring(recv_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)
 
+                frame += 1
+
                 # Show the frame
                 cv2.imshow('Video', image)
                 if (cv2.waitKey(5) & 0xFF) == ord('q'):
@@ -51,6 +55,8 @@ class VideoStreamingTest:
             print('Closing the connection.')
             self.connection.close()
             self.server_socket.close()
+            print("Number of frames received: {0}".format(frame))
+
 
 if __name__ == '__main__':
-	VideoStreamingTest()
+    VideoStreamingTest()

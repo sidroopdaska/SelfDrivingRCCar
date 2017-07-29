@@ -12,8 +12,6 @@ import time
 import os
 import sys
 
-# TODO: save the images within the same .npz file
-
 
 class CollectData(object):
     def __init__(self):
@@ -57,6 +55,7 @@ class CollectData(object):
         # Capture frames from the streamed video
         try:
             frame = 1
+            complex_cmd = False
 
             while self.send_instr:
                 # Get frame
@@ -72,10 +71,11 @@ class CollectData(object):
                 cv2.imwrite('collected_images/frame{:>05}.jpg'.format(frame), image)
 
                 # Show the frame
-                cv2.imshow('Video', image)
+                # cv2.imshow('Video', image)
 
                 # get ROI- lower half of the image (height, width, channel= no channel for greyscale)
                 roi = image[120:240, :]
+                cv2.imshow('Video', roi)
 
                 # Reshape the ROI image into one row array
                 temp_array = roi.reshape(1, 38400).astype(np.float32)
@@ -85,58 +85,68 @@ class CollectData(object):
 
                 # Get driver input
                 for event in pygame.event.get():
-                    if event.type == KEYDOWN:
+                    if event.type == KEYDOWN or complex_cmd:
                         key = pygame.key.get_pressed()
+                        complex_cmd = False
 
                         if key[pygame.K_UP] and key[pygame.K_RIGHT]:
                             print("Forward Right")
+                            complex_cmd = True
+                            self.ser.write(b'5')
                             image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[1]))
                             saved_frames += 1
-                            self.ser.write(b'5')
 
                         elif key[pygame.K_UP] and key[pygame.K_LEFT]:
                             print("Forward Left")
+                            complex_cmd = True
+                            self.ser.write(b'6')
                             image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[0]))
                             saved_frames += 1
-                            self.ser.write(b'6')
 
                         elif key[pygame.K_DOWN] and key[pygame.K_RIGHT]:
                             print("Reverse Right")
+                            complex_cmd = True
                             self.ser.write(b'7')
 
                         elif key[pygame.K_DOWN] and key[pygame.K_LEFT]:
                             print("Reverse Left")
+                            complex_cmd = True
                             self.ser.write(b'8')
 
                         elif key[pygame.K_UP]:
                             print("Forward")
+                            # self.ser.write(b'0')
+                            self.ser.write(b'1')
                             image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[2]))
                             saved_frames += 1
-                            self.ser.write(b'1')
 
                         elif key[pygame.K_DOWN]:
                             print("Reverse")
+                            # self.ser.write(b'0')
+                            self.ser.write(b'2')
                             image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[3]))
                             saved_frames += 1
-                            self.ser.write(b'2')
+                            print("Reverse")
 
                         elif key[pygame.K_RIGHT]:
                             print("Right")
+                            # self.ser.write(b'0')
+                            self.ser.write(b'3')
                             image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[1]))
                             saved_frames += 1
-                            self.ser.write(b'3')
 
                         elif key[pygame.K_LEFT]:
                             print("Left")
+                            # self.ser.write(b'0')
+                            self.ser.write(b'4')
                             image_array = np.vstack((image_array, temp_array))
                             label_array = np.vstack((label_array, self.k[0]))
                             saved_frames += 1
-                            self.ser.write(b'4')
 
                         elif key[pygame.K_x] or key[pygame.K_q]:
                             print("Exit")
@@ -144,7 +154,11 @@ class CollectData(object):
                             self.send_instr = False
                             break
 
+                        else:
+                            self.ser.write(b'0')
+
                     elif event.type == KEYUP:
+                        complex_cmd = False
                         self.ser.write(b'0')
 
             # Save images and labels

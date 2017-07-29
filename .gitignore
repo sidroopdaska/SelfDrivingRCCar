@@ -100,3 +100,6 @@ ENV/
 
 # pycharm
 .idea/
+
+# personal files/directories
+server/collected_images/*

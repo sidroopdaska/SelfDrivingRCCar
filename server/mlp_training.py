@@ -5,7 +5,7 @@ import glob
 import numpy as np
 from sklearn.model_selection import train_test_split
 import sys
-
+import time
 
 def retrieve_data_set():
     """Retrieve data from all the .npz files and aggregate it into a
@@ -33,8 +33,8 @@ def retrieve_data_set():
         image_array = np.vstack((image_array, temp_images))
         label_array = np.vstack((label_array, temp_labels))
 
-    X = image_array[1:, :]
-    Y = label_array[1:, :]
+    X = np.float32(image_array[1:, :])
+    Y = np.float32(label_array[1:, :])
     print("Image array shape: {0}".format(X.shape))
     print("Label array shape: {0}".format(Y.shape))
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     X, Y = retrieve_data_set()
 
     # Split the data set with 7:3 ratio into training set and test set
-    train_X, train_Y, test_X, test_Y = train_test_split(X, Y, test_size=0.3)
+    train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.3)
 
     # Create MLP model and train
     start_time = cv2.getTickCount()
@@ -61,8 +61,8 @@ if __name__ == '__main__':
     model.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
     model.setBackpropMomentumScale(0.0)
     model.setBackpropWeightScale(0.001)
-    model.setTermCriteria((cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 500, 0.001))
-    model.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM, 2, 1)
+    model.setTermCriteria((cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 500, 0.0001))
+    model.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM)
 
     print("Training MLP...")
     model.train(train_X, cv2.ml.ROW_SAMPLE, train_Y)
@@ -74,13 +74,13 @@ if __name__ == '__main__':
     # Get the training accuracy
     ret_train, resp_train = model.predict(train_X)
     train_mean_sq_error = ((resp_train - train_Y) * (resp_train - train_Y)).mean()
-    print("Train set accuracy: {0:.2f}".format(train_mean_sq_error * 100))
+    print("Train set error: {0:.2f}".format(train_mean_sq_error * 100))
 
     # Get the test accuracy
     ret_test, resp_test = model.predict(test_X)
     test_mean_sq_error = ((resp_test - test_Y) * (resp_test - test_Y)).mean()
-    print("Test set accuracy: {0:.2f}".format(test_mean_sq_error * 100))
+    print("Test set error: {0:.2f}".format(test_mean_sq_error * 100))
 
     # Save model
-    model.save("mlp_xml/mlp.xml")
+    model.save("mlp_xml/mlp_{0}.xml".format(str(int(time.time()))))
 
