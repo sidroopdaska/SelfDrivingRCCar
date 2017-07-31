@@ -7,6 +7,10 @@ from sklearn.model_selection import train_test_split
 import sys
 import time
 
+# todo: look at k-fold cross validation, understgand the use of tr/va/te, see how to employ these to ensure
+# good generalisation
+
+
 def retrieve_data_set():
     """Retrieve data from all the .npz files and aggregate it into a
     data set for mlp training"""
@@ -49,20 +53,19 @@ if __name__ == '__main__':
     X, Y = retrieve_data_set()
 
     # Split the data set with 7:3 ratio into training set and test set
-    train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.3)
+    train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.2)
 
     # Create MLP model and train
     start_time = cv2.getTickCount()
 
-    layer_sizes = np.int32([38400, 32, 4])
-
+    layer_sizes = np.int32([38400, 64, 4])
     model = cv2.ml.ANN_MLP_create()
     model.setLayerSizes(layer_sizes)
     model.setTrainMethod(cv2.ml.ANN_MLP_BACKPROP)
     model.setBackpropMomentumScale(0.0)
     model.setBackpropWeightScale(0.001)
     model.setTermCriteria((cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 500, 0.0001))
-    model.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM)
+    model.setActivationFunction(cv2.ml.ANN_MLP_SIGMOID_SYM, 2, 1)
 
     print("Training MLP...")
     model.train(train_X, cv2.ml.ROW_SAMPLE, train_Y)

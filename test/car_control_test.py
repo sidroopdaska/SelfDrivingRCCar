@@ -30,6 +30,7 @@ class CarControlTest:
             for event in pygame.event.get():
                 if event.type == KEYDOWN or complex_cmd:
                     key_input = pygame.key.get_pressed()
+                    complex_cmd = False
 
                     # complex car controls
                     if key_input[pygame.K_UP] and key_input[pygame.K_RIGHT]:
@@ -55,26 +56,18 @@ class CarControlTest:
                     # simple car controls
                     elif key_input[pygame.K_UP]:
                         print("Forward")
-                        complex_cmd = False
-                        self.ser.write(b'0')
                         self.ser.write(b'1')
 
                     elif key_input[pygame.K_DOWN]:
                         print("Reverse")
-                        complex_cmd = False
-                        self.ser.write(b'0')
                         self.ser.write(b'2')
 
                     elif key_input[pygame.K_RIGHT]:
                         print("Right")
-                        complex_cmd = False
-                        self.ser.write(b'0')
                         self.ser.write(b'3')
 
                     elif key_input[pygame.K_LEFT]:
                         print("Left")
-                        complex_cmd = False
-                        self.ser.write(b'0')
                         self.ser.write(b'4')
 
                     # exit
@@ -84,7 +77,6 @@ class CarControlTest:
 
                 elif event.type == pygame.KEYUP:
                     self.ser.write(b'0')
-                    complex_cmd = False
 
                 elif event.type == pygame.QUIT:
                     self.close_serial_connection()

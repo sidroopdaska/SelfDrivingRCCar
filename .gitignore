@@ -102,4 +102,15 @@ ENV/
 .idea/
 
 # personal files/directories
+
 server/collected_images/*
+!server/collected_images/README.md
+
+server/data_set_1/*
+server/data_set_old/*
+server/data_set/*
+!server/data_set/README.md
+
+server/mlp_xml_1/*
+server/mlp_xml/*
+!server/mlp_xml/README.md

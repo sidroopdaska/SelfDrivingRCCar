@@ -11,7 +11,7 @@ import struct
 
 class NeuralNetwork():
     def __init__(self):
-        self.model = cv2.ml.ANN_MLP_load('mlp_xml/mlp.xml')
+        self.model = cv2.ml.ANN_MLP_load('mlp_xml/mlp_1501357468.xml')
 
     def predict(self, samples):
         ret, resp = self.model.predict(samples)

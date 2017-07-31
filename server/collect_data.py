@@ -68,7 +68,7 @@ class CollectData(object):
                 image = cv2.imdecode(np.fromstring(recv_bytes, dtype=np.uint8), cv2.IMREAD_GRAYSCALE)
 
                 # save image
-                cv2.imwrite('collected_images/frame{:>05}.jpg'.format(frame), image)
+                # cv2.imwrite('collected_images/frame{:>05}.jpg'.format(frame), image)
 
                 # Show the frame
                 # cv2.imshow('Video', image)
@@ -88,6 +88,8 @@ class CollectData(object):
                     if event.type == KEYDOWN or complex_cmd:
                         key = pygame.key.get_pressed()
                         complex_cmd = False
+                        # only save the images where there is user action
+                        cv2.imwrite('collected_images/frame{:>05}.jpg'.format(frame), image)
 
                         if key[pygame.K_UP] and key[pygame.K_RIGHT]:
                             print("Forward Right")
