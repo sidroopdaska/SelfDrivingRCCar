@@ -1,21 +1,21 @@
+"""client.py: Client side code for chat app using TCP/IP Sockets"""
+
 import socket
-import sys
+from utils.utils import *
 
 # create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# Bind socket to the port
-server_address = ('10.104.64.231', 45713)
-print 'start up on  %s port %s' % server_address
 sock.connect(server_address)
+print("Connected to server")
 
 try:
 	while True:
-		data = raw_input("Client: ")
-		sock.sendall(data)
+		data = input("Client: ")
+		sock.sendall(bytes(data, 'utf-8'))
 		recvData = sock.recv(256)
-		print 'Server: %s' %recvData
-		if (data == '#'):
+		print(f'Server: {str(recvData)}')
+		if recvData == b'#':
 			break;
 finally:
-	print 'Closing socket'
+	print('Closing socket')
 	sock.close()

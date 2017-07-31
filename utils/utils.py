@@ -2,8 +2,10 @@ import serial
 import serial.tools.list_ports
 
 arduino_serial_number = '75237333536351F0F0C1'
-# server_address = ('10.104.64.231', 45713)
-server_address = ('192.168.0.88', 45713)
+
+# server_address_home = ('192.168.0.88', 45713)
+server_address_corp = ('10.72.76.108', 45713)
+server_address = server_address_corp
 
 rpi = "10.104.66.208', 49214"
 

@@ -1,3 +1,5 @@
+"""server.py: Server side code for chat app using TCP/IP Sockets"""
+
 import socket
 from utils.utils import *
 
@@ -6,12 +8,15 @@ def handle_connection(connection, client_address):
 		print('connected to {0} on port:{1}'.format(client_address[0], client_address[1]))
 		while True:
 			data = connection.recv(256)
-			print("Received: {0}".format(str(data)))
-			if data == b'#':
-				break
-			else:
-				print('Sending data back to the client')
+			if data:
+				print("Received: {0}".format(str(data)))
 				connection.sendall(data)
+
+				if data == b'#':
+					print('Ending the current connection')
+					break
+				else:
+					print('Sending data back to the client')
 	finally:
 		# clean up the connection
 		connection.close()
