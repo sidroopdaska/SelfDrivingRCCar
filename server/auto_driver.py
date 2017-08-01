@@ -8,6 +8,9 @@ import socketserver
 from utils.utils import *
 import struct
 
+# Ultrasonic sensor distance value
+sensor_data = None
+
 
 class NeuralNetwork():
     def __init__(self):
@@ -47,6 +50,7 @@ class VideoStreamHandler(socketserver.StreamRequestHandler):
     model = NeuralNetwork()
 
     car = RCControl()
+    global sensor_data
 
     def handle(self):
         # read the video frames one by one
@@ -73,7 +77,12 @@ class VideoStreamHandler(socketserver.StreamRequestHandler):
                 # Neural Network makes the prediction
                 prediction = self.model.predict(image_array)
 
-                self.car.steer(prediction)
+                # Check for stop conditions
+                if sensor_data is not None and sensor_data < 15:
+                    # Front collision avoidance
+                    self.car.stop()
+                else:
+                    self.car.steer(prediction)
 
                 if (cv2.waitKey(5) & 0xFF) == ord('q'):
                     break
@@ -85,13 +94,34 @@ class VideoStreamHandler(socketserver.StreamRequestHandler):
             print("Connection closed on the server video thread!")
 
 
+class SensorStreamHandler(socketserver.BaseRequestHandler):
+    global sensor_data
+    data = " "
+
+    def handle(self):
+        try:
+            while self.data:
+                self.data = self.request.recv(1024)
+                sensor_data = round(float(self.data), 1)
+                print(f"Dist: {sensor_data}")
+        finally:
+            print("Connection closed on sensor server thread!")
+
+
 class ThreadServer():
     def server_video_thread(host, port):
         server = socketserver.TCPServer((host, port), VideoStreamHandler)
         server.serve_forever()
 
+    def ultrasonic_server_thread(host, port):
+        server = socketserver.TCPServer((host, port), SensorStreamHandler)
+        server.serve_forever()
+
     video_thread = threading.Thread(target=server_video_thread, args=(server_address[0], server_address[1]))
     video_thread.start()
+
+    ultrasonic_sensor_thread = threading.Thread(target=ultrasonic_server_thread, args=(server_address[0], server_address[1] + 1))
+    ultrasonic_sensor_thread.start()
 
 if __name__ == '__main__':
     ThreadServer()
