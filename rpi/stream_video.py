@@ -6,15 +6,14 @@ import time
 import picamera
 import struct
 import socket
-
-
+from rpi.utils import (server_address
+                       )
 # Create a TCP/IP socket and establish connection with
 # the server
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print('Starting connection')
 
-server_address = ('10.104.64.231', 45713)
-server_address = ('192.168.0.88', 45713)
+
 client_socket.connect(server_address)
 
 print('Connected to server')

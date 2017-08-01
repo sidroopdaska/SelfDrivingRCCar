@@ -23,7 +23,7 @@ class CaptureSensorDataTest(object):
                 print("Distance: {0:.1f} cm".format(sensor_data))
 
                 # Test for 1 min
-                if time.time() > 60:
+                if time.time() - start > 300:
                     break
         finally:
             self.connection.close()
