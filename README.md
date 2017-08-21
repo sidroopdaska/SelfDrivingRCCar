@@ -2,9 +2,10 @@
 A scaled down version of self-driving system using Neual Networks and OpenCV. The system comprises of - 
 * Raspberry Pi with a camera and an ultrasonic sensor as inputs,
 * Server that handles:
-  * Steering
-  * Object recognition (stop sign and traffic light)
-  * Distance measurement
+  * Steering using NN predictions
+  * Stop sign and traffic light detection using Haar feature based Cascade Classifiers
+  * Distance measurement through monocular vision
+  * Front collision avoidance using ultrasonic sensor
 * RC Car, and, 
 * an Arduino board for RC car control
 
