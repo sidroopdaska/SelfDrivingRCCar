@@ -11,8 +11,8 @@ A scaled down version of self-driving system using Neual Networks and OpenCV. Th
 
 See the self-driving car in action (Note: an improved video is on its way!)
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=hKujay-jUlc" target="_blank">
-<img src="http://img.youtube.com/vi/hKujay-jUlc/0.jpg" alt="IMAGE ALT TEXT HERE" width="480" height="300" border="10" />
+<a href="https://youtu.be/8V3rm8NNSXQ" target="_blank">
+<img src="http://img.youtube.com/vi/8V3rm8NNSXQ/0.jpg" width="480" border="10" />
 </a>
 
 
