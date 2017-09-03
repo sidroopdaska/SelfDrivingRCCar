@@ -63,3 +63,4 @@ See the self-driving car in action (Note: an improved video is on its way!)
 
 * Self-driving in action: First run *auto_driver.py* to start the server and then run “stream_video.py” and “stream_sensor_data.py” on raspberry pi.
 
+Thanks alot to @hamuchiwa for the inspiration.
