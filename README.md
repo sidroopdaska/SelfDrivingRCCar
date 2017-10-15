@@ -1,5 +1,5 @@
 ## Self Driving RC Car
-A scaled down version of self-driving system using Neual Networks and OpenCV. The system comprises of - 
+A scaled down version of self-driving system using Neural Networks and OpenCV. The system comprises of - 
 * Raspberry Pi with a camera and an ultrasonic sensor as inputs,
 * Server that handles:
   * Steering using NN predictions
