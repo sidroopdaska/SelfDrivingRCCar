@@ -1,4 +1,9 @@
 ## Self Driving RC Car
+
+<a href="https://youtu.be/8V3rm8NNSXQ" target="_blank">
+<img src="http://img.youtube.com/vi/8V3rm8NNSXQ/0.jpg" width="480" border="10" />
+</a>
+<br/>
 A scaled down version of self-driving system using Neural Networks and OpenCV. The system comprises of - 
 * Raspberry Pi with a camera and an ultrasonic sensor as inputs,
 * Server that handles:
@@ -8,13 +13,6 @@ A scaled down version of self-driving system using Neural Networks and OpenCV. T
   * Front collision avoidance using ultrasonic sensor
 * RC Car, and, 
 * an Arduino board for RC car control
-
-See the self-driving car in action (Note: an improved video is on its way!)
-
-<a href="https://youtu.be/8V3rm8NNSXQ" target="_blank">
-<img src="http://img.youtube.com/vi/8V3rm8NNSXQ/0.jpg" width="480" border="10" />
-</a>
-
 
 ### Dependencies
 * Server
