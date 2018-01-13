@@ -3,7 +3,7 @@
 <a href="https://youtu.be/8V3rm8NNSXQ" target="_blank">
 <img src="http://img.youtube.com/vi/8V3rm8NNSXQ/0.jpg" width="480" border="10" />
 </a>
-<br/>
+<br/><br/>
 A scaled down version of self-driving system using Neural Networks and OpenCV. The system comprises of - 
 * Raspberry Pi with a camera and an ultrasonic sensor as inputs,
 * Server that handles:
